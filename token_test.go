@@ -22,7 +22,7 @@ func TestLoadPrivateKey(t *testing.T) {
 	}
 }
 
-func TestgenerateToken(t *testing.T) {
+func TestGenerateToken(t *testing.T) {
 	token, err := generateToken("42a")
 	if token == "" {
 		t.Errorf("Blank token returned")
