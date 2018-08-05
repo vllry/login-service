@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"github.com/gorilla/mux"
 	"log"
@@ -18,17 +19,27 @@ func newServer() *server {
 	}
 
 	s.router.HandleFunc("/", IndexHandler)
-	s.router.HandleFunc("/{userId}", LoginHandler).Methods("PUT")
+	s.router.Handle("/test", AddContext(http.HandlerFunc(RegisterHandler)))
+	s.router.HandleFunc("/register/{userId}", RegisterHandler).Methods("POST")
+	s.router.HandleFunc("/login/{userId}", LoginHandler).Methods("POST")
 
 	http.Handle("/", s.router)
 
 	return &s
 }
 
+func AddContext(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		log.Println(r.Method, "-", r.RequestURI)
+		ctx := context.WithValue(r.Context(), "Username", "testval")
+		next.ServeHTTP(w, r.WithContext(ctx))
+	})
+}
+
 func (s *server) start() {
 	srv := &http.Server{
 		Handler:      s.router,
-		Addr:         "0.0.0.0:8000",
+		Addr:         "0.0.0.0:8080",
 		WriteTimeout: 15 * time.Second,
 		ReadTimeout:  15 * time.Second,
 	}
