@@ -1,13 +1,30 @@
 package main
 
 import (
+	"crypto/rsa"
 	"github.com/opentracing/opentracing-go"
 	"github.com/uber/jaeger-client-go"
 	"github.com/uber/jaeger-client-go/config"
+	"os"
 	"time"
 )
 
+var privateKeyPath string
+var jaegerHostPort string
+var secretPrivateKey *rsa.PrivateKey
+
 func main() {
+	privateKeyPath = "/secrets/key/private.pem"
+	jaegerHostPort = os.Getenv("JAEGER_HOST_PORT")
+	if jaegerHostPort == "" {
+		jaegerHostPort = "localhost:6832"
+	}
+	var err error
+	secretPrivateKey, err = loadPrivateKey(privateKeyPath)
+	if err != nil {
+		panic("unable to load private key")
+	}
+
 	cfg := config.Configuration{
 		Sampler: &config.SamplerConfig{
 			Type:  "const",
@@ -15,7 +32,7 @@ func main() {
 		},
 		Reporter: &config.ReporterConfig{
 			LogSpans:            true,
-			LocalAgentHostPort: "jaeger:6832",
+			LocalAgentHostPort:  jaegerHostPort,
 			BufferFlushInterval: 1 * time.Second,
 		},
 	}

@@ -20,18 +20,13 @@ func loadPrivateKey(keyPath string) (*rsa.PrivateKey, error) {
 }
 
 func generateToken(userId string) (string, error) {
-	secretKey, err := loadPrivateKey("test/key.pem") // TODO pass in call
-	if err != nil {
-		return "", err
-	}
-
 	secretToken := jwt.NewWithClaims(
 		jwt.SigningMethodRS256,
 		jwt.MapClaims{
 			"userId": userId,
 		})
 
-	secretTokenString, err := secretToken.SignedString(secretKey)
+	secretTokenString, err := secretToken.SignedString(secretPrivateKey)
 
 	return secretTokenString, err
 }
