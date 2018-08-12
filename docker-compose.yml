@@ -21,3 +21,8 @@ services:
     - "16686:16686"
     - "14268:14268"
     - "9411:9411"
+
+  prometheus:
+    image: quay.io/prometheus/prometheus:latest
+    ports:
+    - 9090:9090

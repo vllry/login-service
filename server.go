@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/gorilla/mux"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"log"
 	"net/http"
 	"time"
@@ -19,6 +20,7 @@ func newServer() *server {
 	}
 
 	s.router.HandleFunc("/", IndexHandler)
+	s.router.Handle("/metrics", promhttp.Handler())
 	s.router.Handle("/test", AddContext(http.HandlerFunc(RegisterHandler)))
 	s.router.HandleFunc("/register/{userId}", RegisterHandler).Methods("POST")
 	s.router.HandleFunc("/login/{userId}", LoginHandler).Methods("POST")
